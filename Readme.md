@@ -3,6 +3,7 @@
 Python code (Appendix A,C) and Praat scripts(Low, Mid, High) for automatic speech analysis.
 
 ## Repository Structure
+```bash
 src/ : Python source code
   Appendix A. 자동음절분석 타임스템프 라벨 기반 자르기.py
   Appendix C. Automatic Voice Diagnosis System.py
