@@ -1,0 +1,46 @@
+﻿# Define directory and output file
+inputDirectory$ = "c:\praat\clips_output\00.06 자동 분석 고음\"
+outputCSV$ = "C:\praat\분석결과\song_analysis_results.csv"
+# 임시: 공용 바탕화면에 저장 (권한 문제 회피 시도)
+
+# Prepare the CSV file
+filedelete outputCSV$
+appendFileLine: outputCSV$, "Filename,Mean Pitch (Hz),Mean F1 (Hz),Mean F2 (Hz),Mean Intensity (dB)"
+
+# Read all wav files in the directory
+Create Strings as file list... wavList 'inputDirectory$'*.wav
+nFiles = Get number of strings
+
+for i from 1 to nFiles
+    select Strings wavList
+    filename$ = Get string... i
+
+    # Read the wav file
+    Read from file... 'inputDirectory$''filename$'
+    sound = selected("Sound")
+
+    # Extract pitch
+    To Pitch... 0.01 75 500
+    pitch = selected("Pitch")
+    meanPitch = Get mean... 0 0 Hertz
+
+    # Extract formants
+    selectObject: sound
+    To Formant (burg)... 0 5 5500 0.025 50
+    formant = selected("Formant")
+    meanF1 = Get mean... 1 0 0 Hertz
+    meanF2 = Get mean... 2 0 0 Hertz
+
+    # Extract intensity
+    selectObject: sound
+    To Intensity... 75 0
+    intensity = selected("Intensity")
+    meanIntensity = Get mean... 0 0 dB
+
+    # Write results to CSV
+    dataLine$ = filename$ + "," + string$(meanPitch) + "," + string$(meanF1) + "," + string$(meanF2) + "," + string$(meanIntensity)
+    appendFileLine: outputCSV$, dataLine$
+endfor
+
+# Print completion message
+printline: "Analysis completed and results saved to ", outputCSV$
